@@ -4,6 +4,10 @@ import Files from 'react-files'
 import {parseString} from 'xml2js';
 import './App.css';
 
+
+let zip = (iter) => iter[0].map((_, c) => iter.map(i => i[c]));
+
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -43,19 +47,23 @@ class App extends Component {
     render() {
         let fileLoaded = this.state.fileJSON !== null;
         let dataSetShapes;
+        let dataSetHeaders;
         let dataSets;
         if (this.state.fileJSON !== null) {
-            dataSetShapes = this.state.fileJSON["DataSet"].map(
-                (i) => [i["DataColumn"].length, i["DataColumn"][0]["ColumnCells"][0].split("\n").length]
-            );
-            let dataSets = this.state.fileJSON["DataSet"].map(
+            dataSets = this.state.fileJSON["DataSet"].map(
                 (i) => i["DataColumn"].map(
-                    (j) => j["ColumnCells"][0].split("\n").map(
+                    (j) => j["ColumnCells"][0].trim().split("\n").map(
                         (k) => parseFloat(k)
                     )
                 )
             );
-            console.log(dataSets);
+            dataSetHeaders = this.state.fileJSON["DataSet"].map(
+                (i) => i["DataColumn"].map(
+                    (j) => j["ColumnUnits"][0]
+                )
+            );
+            dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
+            // dataSetHeaders = this.state.fileJSON[]
         }
         return (
             <div className="App">
@@ -80,13 +88,15 @@ class App extends Component {
 
                         {fileLoaded
                             ? <FileInfo fileName={this.state.fileJSON["FileName"][0]}
-                                                fileSize={this.state.fileSize}
-                                                dataSetShapes={dataSetShapes}/>
+                                        fileSize={this.state.fileSize}
+                                        dataSetShapes={dataSetShapes}/>
                             : null}
                     </div>
                     <div className="row">
                         {fileLoaded
-                            ? <DataTable/>
+                            // TODO choose which data set to load
+                            ? <DataTable dataSet={dataSets[0]}
+                                         dataSetHeaders={dataSetHeaders[0]}/>
                             : <div>No file loaded</div>}
                     </div>
                 </div>
@@ -106,7 +116,7 @@ class FileInfo extends Component {
             <div id="file-info">
                 <div>File name: {this.props.fileName}</div>
                 <div>File size: {this.props.fileSize}</div>
-                <div>Data: {numberDataSets} data set{numberDataSets > 1 ? "s" : ""}: {shapes}</div>
+                <div>{numberDataSets} data set{numberDataSets > 1 ? "s" : ""}: {shapes}</div>
             </div>
         );
     }
@@ -121,17 +131,29 @@ FileInfo.propTypes = {
 
 class DataTable extends Component {
     render() {
-
+        let rows = zip(this.props.dataSet);
         return <table className="data-table">
+            <tbody>
             <tr>
-                <td>Hello</td>
-                <td>World</td>
+                {this.props.dataSetHeaders.map(
+                    (header, i) => <th key={i}>{header}</th>
+                )}
             </tr>
+            {rows.map(
+                (row, i) => <tr key={i}>{
+                    row.map(
+                        (number, j) =>
+                            <td key={i.toString() + j.toString()}>{number}</td>
+                    )
+                }</tr>
+            )}
+            </tbody>
         </table>
     }
 }
 
 DataTable.propTypes = {
+    dataSetHeaders: PropTypes.array,
     dataSet: PropTypes.array
 };
 
