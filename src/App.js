@@ -19,10 +19,6 @@ class App extends Component {
         this.onFilesChange = this.onFilesChange.bind(this);
     }
 
-    parseDataSets() {
-        // TODO: parses data and stores in state
-    }
-
     onFilesChange(files) {
         // Is called when a file is loaded
         let file = files[0];
@@ -63,7 +59,6 @@ class App extends Component {
                 )
             );
             dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
-            // dataSetHeaders = this.state.fileJSON[]
         }
         return (
             <div className="App">
@@ -95,8 +90,8 @@ class App extends Component {
                     <div className="row">
                         {fileLoaded
                             // TODO choose which data set to load
-                            ? <DataTable dataSet={dataSets[0]}
-                                         dataSetHeaders={dataSetHeaders[0]}/>
+                            ? <DataSetSelector dataSets={dataSets}
+                                               dataSetsHeaders={dataSetHeaders}/>
                             : <div>No file loaded</div>}
                     </div>
                 </div>
@@ -126,6 +121,43 @@ FileInfo.propTypes = {
     fileName: PropTypes.string,
     fileSize: PropTypes.number,
     dataSetShapes: PropTypes.array // [[1, 2], [10, 5]]
+};
+
+class DataSetSelector extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedDataSet: 0
+        };
+        this.onDataSetSelect = this.onDataSetSelect.bind(this);
+    }
+
+    onDataSetSelect(e) {
+        this.setState({
+            selectedDataSet: e.target.value
+        })
+    }
+
+    render() {
+        let i = this.state.selectedDataSet;
+        return (
+            <div>
+                <select id="data-set-selector" onChange={this.onDataSetSelect}>
+                    {this.props.dataSets.map(
+                        (dataSet, ind) =>
+                            <option key={ind} value={ind}>Data Set {ind + 1}</option>
+                    )}
+                </select>
+                <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
+                           dataSet={this.props.dataSets[i]} />
+            </div>
+        );
+    }
+}
+
+DataSetSelector.propTypes = {
+    dataSets: PropTypes.array,
+    dataSetsHeaders: PropTypes.array
 };
 
 
