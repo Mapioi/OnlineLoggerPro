@@ -1,0 +1,50 @@
+h1 {
+    text-align: center;
+}
+
+#layout > .row {
+    border: 1px solid black;
+}
+
+#layout > .row > * {
+    margin: 10px;
+    display: inline-block;
+}
+
+/* File */
+
+.files-dropzone {
+    border: 3px dashed lightgray;
+    border-radius: 3px;
+    padding: 20px;
+}
+
+.files-dropzone-active {
+    background-color: lightgreen;
+}
+
+/* File info */
+
+.data-set-shape {
+    display: inline-block;
+    padding: 2px;
+    border: 1px solid black;
+    margin-right: 4px;
+}
+
+/* Data Table */
+
+.data-table {
+    border-collapse: collapse;
+}
+
+.data-table,
+.data-table td,
+.data-table th {
+    border: 1px solid black;
+}
+
+.data-table td,
+.data-table th {
+    padding: 5px;
+}
