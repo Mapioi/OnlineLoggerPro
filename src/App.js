@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
 import Dygraph from 'dygraphs/index.es5';
+import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge} from 'reactstrap';
 import './App.css';
 
 
@@ -63,39 +64,44 @@ class App extends Component {
         }
         return (
             <div className="App">
-                <header className="App-header">
-                    <h1>LoggerPro Online</h1>
-                </header>
+                <Navbar color="dark" dark expand="md">
+                    <NavbarBrand href="#" className={"mx-auto"}>Online LoggerPro</NavbarBrand>
+                </Navbar>
 
-                <div id="layout">
-                    <div className="row">
-                        <Files
-                            className='files-dropzone'
-                            onChange={this.onFilesChange}
-                            onError={App.onFilesError}
-                            accepts={['.cmbl']} // TODO find out the other file formats
-                            multiple={false}
-                            maxFileSize={10000000}
-                            minFileSize={0}
-                            clickable
-                        >
-                            Drop files here or click to upload
-                        </Files>
 
-                        {fileLoaded
-                            ? <FileInfo fileName={this.state.fileJSON["FileName"][0]}
-                                        fileSize={this.state.fileSize}
-                                        dataSetShapes={dataSetShapes}/>
-                            : null}
-                    </div>
-                    <div className="row">
-                        {fileLoaded
-                            // TODO choose which data set to load
-                            ? <DataSetSelector dataSets={dataSets}
-                                               dataSetsHeaders={dataSetHeaders}/>
-                            : <div>No file loaded</div>}
-                    </div>
-                </div>
+                <Container>
+                    <Row>
+                        <Col>
+                            <Files className='files-dropzone'
+                                   onChange={this.onFilesChange}
+                                   onError={App.onFilesError}
+                                   // TODO find out the other file formats
+                                   accepts={['.cmbl']}
+                                   multiple={false}
+                                   maxFileSize={10000000}
+                                   minFileSize={0}
+                                   clickable={true}>
+                                Drop files here or click to upload
+                            </Files>
+                        </Col>
+                        <Col>
+                            {fileLoaded
+                                ? <FileInfo fileName={this.state.fileJSON["FileName"][0]}
+                                            fileSize={this.state.fileSize}
+                                            dataSetShapes={dataSetShapes}/>
+                                : null}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            {fileLoaded
+                                // TODO choose which data set to load
+                                ? <DataSetSelector dataSets={dataSets}
+                                                   dataSetsHeaders={dataSetHeaders}/>
+                                : <div>No file loaded</div>}
+                        </Col>
+                    </Row>
+                </Container>
             </div>
         );
     }
@@ -105,7 +111,7 @@ class App extends Component {
 class FileInfo extends Component {
     render() {
         let shapes = this.props.dataSetShapes.map(
-            (i, index) => <div key={index} className="data-set-shape">{i[0]} x {i[1]}</div>
+            (i, index) => <Badge color="secondary" key={index} className="data-set-shape">{i[0]} x {i[1]}</Badge>
         );
         let numberDataSets = this.props.dataSetShapes.length;
         return (
@@ -142,19 +148,23 @@ class DataSetSelector extends Component {
     render() {
         let i = this.state.selectedDataSet;
         return (
-            <div className="data-display">
-                <div className="data-table-wrapper">
-                    <select id="data-set-selector" onChange={this.onDataSetSelect}>
+            <Container><Row>
+                <Col>
+                    <Input type="select" name="select"
+                           id="data-set-selector" onChange={this.onDataSetSelect}>
                         {this.props.dataSets.map(
                             (dataSet, ind) =>
                                 <option key={ind} value={ind}>Data Set {ind + 1}</option>
                         )}
-                    </select>
+                    </Input>
+
                     <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
                                dataSet={this.props.dataSets[i]} />
-                </div>
-                <DataGraph columns={this.props.dataSets[i]}/>
-            </div>
+                </Col>
+                <Col>
+                    <DataGraph columns={this.props.dataSets[i]}/>
+                </Col>
+            </Row></Container>
         );
     }
 }
@@ -168,23 +178,27 @@ DataSetSelector.propTypes = {
 class DataTable extends Component {
     render() {
         let rows = zip(this.props.dataSet);
-        return <table className="data-table">
-            <tbody>
-            <tr>
-                {this.props.dataSetHeaders.map(
-                    (header, i) => <th key={i}>{header}</th>
+        return <div className="data-table-wrapper">
+            <Table className="data-table" bordered={true} hover={true}>
+                <thead>
+                    <tr>
+                        {this.props.dataSetHeaders.map(
+                            (header, i) => <th key={i}>{header}</th>
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                {rows.map(
+                    (row, i) => <tr key={i}>{
+                        row.map(
+                            (number, j) =>
+                                <td key={i.toString() + j.toString()}>{number.toFixed(2)}</td>
+                        )
+                    }</tr>
                 )}
-            </tr>
-            {rows.map(
-                (row, i) => <tr key={i}>{
-                    row.map(
-                        (number, j) =>
-                            <td key={i.toString() + j.toString()}>{number.toFixed(2)}</td>
-                    )
-                }</tr>
-            )}
-            </tbody>
-        </table>
+                </tbody>
+            </Table>
+        </div>
     }
 }
 
@@ -224,6 +238,8 @@ class DataGraph extends Component {
                     labelsKMB: true
                 }
             },
+            dateWindow: null,
+            valueRange: null
         };
     }
 

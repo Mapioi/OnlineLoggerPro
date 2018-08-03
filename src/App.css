@@ -1,14 +1,13 @@
-h1 {
-    text-align: center;
+/* Header */
+
+.navbar-brand {
+    font-size: 2em;
 }
 
-#layout > .row {
-    border: 1px solid black;
-}
+/* Layout */
 
-#layout > .row > * {
-    margin: 10px;
-    display: inline-block !important;
+.col {
+    padding-top: 10px;
 }
 
 /* File */
@@ -24,12 +23,13 @@ h1 {
 }
 
 /* File info */
-
 .data-set-shape {
-    display: inline-block;
-    padding: 2px;
-    border: 1px solid black;
-    margin-right: 4px;
+    margin: 2px;
+}
+
+/* Data select */
+#data-set-selector {
+    margin: 10px 0;
 }
 
 /* Data Display */
@@ -45,25 +45,10 @@ h1 {
 
 /* Data Table */
 
-.data-table-wrapper {
-    /*float: left;*/
-    /*width: 25%;*/
-}
-
-.data-table {
-    border-collapse: collapse;
-}
-
-.data-table,
-.data-table td,
-.data-table th {
-    border: 1px solid black;
-}
-
-.data-table td,
-.data-table th {
-    padding: 5px;
-}
+/*.data-table-wrapper {*/
+    /*!*overflow: auto;*!*/
+    /*height: 80vh;*/
+/*}*/
 
 /* Graph */
 
@@ -72,5 +57,5 @@ h1 {
     margin: 20px;
     /* TODO not absolute */
     height: 500px;
-    width: 70%;
+    width: 100%;
 }
