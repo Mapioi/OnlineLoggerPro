@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
+import Dygraph from 'dygraphs';
 import './App.css';
 
 
@@ -141,15 +142,18 @@ class DataSetSelector extends Component {
     render() {
         let i = this.state.selectedDataSet;
         return (
-            <div>
-                <select id="data-set-selector" onChange={this.onDataSetSelect}>
-                    {this.props.dataSets.map(
-                        (dataSet, ind) =>
-                            <option key={ind} value={ind}>Data Set {ind + 1}</option>
-                    )}
-                </select>
-                <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
-                           dataSet={this.props.dataSets[i]} />
+            <div className="data-display">
+                <div className="data-table-wrapper">
+                    <select id="data-set-selector" onChange={this.onDataSetSelect}>
+                        {this.props.dataSets.map(
+                            (dataSet, ind) =>
+                                <option key={ind} value={ind}>Data Set {ind + 1}</option>
+                        )}
+                    </select>
+                    <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
+                               dataSet={this.props.dataSets[i]} />
+                </div>
+                <DataGraph columns={this.props.dataSets[i]}/>
             </div>
         );
     }
@@ -175,7 +179,7 @@ class DataTable extends Component {
                 (row, i) => <tr key={i}>{
                     row.map(
                         (number, j) =>
-                            <td key={i.toString() + j.toString()}>{number}</td>
+                            <td key={i.toString() + j.toString()}>{number.toFixed(2)}</td>
                     )
                 }</tr>
             )}
@@ -187,6 +191,63 @@ class DataTable extends Component {
 DataTable.propTypes = {
     dataSetHeaders: PropTypes.array,
     dataSet: PropTypes.array
+};
+
+
+class DataGraph extends Component {
+    constructor(props) {
+        super(props);
+        this.g = null;
+    }
+
+    generateData() {
+        return zip(
+            this.props.columns
+        ) //.map((i) => i.join(","));
+    }
+
+    generateOptions() {
+        let labels = this.props.columns.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
+        return {
+            labels: labels,
+            series: {
+                'Y2': {
+                    axis: 'y2'
+                }
+            },
+            axes: {
+                y: {
+                    axisLabelWidth: 60
+                },
+                y2: {
+                    // set axis-related properties here
+                    labelsKMB: true
+                }
+            },
+        };
+    }
+
+    componentDidMount() {
+        this.g = new Dygraph(
+            this.refs.graph, this.generateData().join("\n"), this.generateOptions()
+        );
+    }
+
+    render() {
+        if (this.g !== null) {
+            // If the digraph object has been created, we refresh the current graph
+            // Else a new graph is created in componentDidMount
+            this.g.updateOptions(Object.assign(
+                {'file': this.generateData()}, this.generateOptions()
+            ));
+        }
+
+        return <div id="graph" ref="graph"></div>
+    }
+}
+
+DataGraph.propTypes = {
+    columns: PropTypes.array
 };
 
 export default App;

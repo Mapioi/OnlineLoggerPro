@@ -8,7 +8,7 @@ h1 {
 
 #layout > .row > * {
     margin: 10px;
-    display: inline-block;
+    display: inline-block !important;
 }
 
 /* File */
@@ -32,7 +32,23 @@ h1 {
     margin-right: 4px;
 }
 
+/* Data Display */
+
+.data-display {
+    width: 100%;
+}
+
+.data-display > * {
+    display: inline-block;
+}
+
+
 /* Data Table */
+
+.data-table-wrapper {
+    /*float: left;*/
+    /*width: 25%;*/
+}
 
 .data-table {
     border-collapse: collapse;
@@ -47,4 +63,14 @@ h1 {
 .data-table td,
 .data-table th {
     padding: 5px;
+}
+
+/* Graph */
+
+#graph {
+    float: right;
+    margin: 20px;
+    /* TODO not absolute */
+    height: 500px;
+    width: 70%;
 }
