@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
-import Dygraph from 'dygraphs';
+import Dygraph from 'dygraphs/index.es5';
 import './App.css';
 
 
