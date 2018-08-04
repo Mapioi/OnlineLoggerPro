@@ -32,6 +32,12 @@
     margin: 10px 0;
 }
 
+.vertical-align {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Data Display */
 
 .data-display {
@@ -42,20 +48,11 @@
     display: inline-block;
 }
 
-
-/* Data Table */
-
-/*.data-table-wrapper {*/
-    /*!*overflow: auto;*!*/
-    /*height: 80vh;*/
-/*}*/
-
 /* Graph */
 
 #graph {
     float: right;
     margin: 20px;
-    /* TODO not absolute */
-    height: 500px;
+    height: 70vh;
     width: 100%;
 }

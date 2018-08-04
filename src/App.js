@@ -2,13 +2,16 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
+import FileDownload from "js-file-download";
 import Dygraph from 'dygraphs/index.es5';
-import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge} from 'reactstrap';
+import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button} from 'reactstrap';
 import './App.css';
 
 
 let zip = (iter) => iter[0].map((_, c) => iter.map(i => i[c]));
-
+let arrayToCSV = (arr) => arr.map(
+    (line) => line.join(",")
+).join("\n");
 
 class App extends Component {
     constructor(props) {
@@ -25,7 +28,7 @@ class App extends Component {
 
     onDataSetSelect(e) {
         this.setState({
-            selectedDataSet: e.target.value
+            selectedDataSet: parseInt(e.target.value)
         })
     }
 
@@ -46,7 +49,7 @@ class App extends Component {
         reader.readAsText(file);
     }
 
-    static onFilesError(error, _) {
+    static onFilesError(error) {
         alert('Error code ' + error.code + ': ' + error.message)
     }
 
@@ -56,6 +59,7 @@ class App extends Component {
         let dataSetShapes;
         let dataSetHeaders;
         let dataSets;
+        let fileName;
         if (this.state.fileJSON !== null) {
             dataSets = this.state.fileJSON["DataSet"].map(
                 (i) => i["DataColumn"].map(
@@ -70,6 +74,7 @@ class App extends Component {
                 )
             );
             dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
+            fileName = this.state.fileJSON["FileName"][0];
         }
         return (
             <div className="App">
@@ -80,7 +85,7 @@ class App extends Component {
 
                 <Container>
                     <Row>
-                        <Col>
+                        <Col className={"vertical-align"}>
                             <Files className='files-dropzone'
                                    onChange={this.onFilesChange}
                                    onError={App.onFilesError}
@@ -95,16 +100,24 @@ class App extends Component {
                         </Col>
                         <Col>
                             {fileLoaded
-                                ? <FileInfo fileName={this.state.fileJSON["FileName"][0]}
+                                ? <FileInfo fileName={fileName}
                                             fileSize={this.state.fileSize}
                                             dataSetShapes={dataSetShapes}/>
+                                : null}
+                        </Col>
+                        <Col className="vertical-align">
+                            {fileLoaded
+                                ? <Export dataSet={zip(dataSets[this.state.selectedDataSet])}
+                                          fileName={
+                                              fileName.split(".")[0] + "_data_set"
+                                              + (this.state.selectedDataSet + 1) + ".csv"
+                                          }/>
                                 : null}
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             {fileLoaded
-                                // TODO choose which data set to load
                                 ? <DataSetSelector selectedDataSet={this.state.selectedDataSet}
                                                    dataSetChangeCallback={this.onDataSetSelect}
                                                    dataSets={dataSets}
@@ -141,12 +154,38 @@ FileInfo.propTypes = {
     dataSetShapes: PropTypes.array // [[1, 2], [10, 5]]
 };
 
+
+class Export extends Component {
+    constructor(props) {
+        super(props);
+        this.exportDataSet = this.exportDataSet.bind(this);
+    }
+
+    exportDataSet() {
+        FileDownload(arrayToCSV(this.props.dataSet), this.props.fileName)
+    }
+
+    render() {
+        return (
+            <Button onClick={this.exportDataSet}>
+                Export selected data set as CSV
+            </Button>
+        );
+    }
+}
+
+Export.propTypes = {
+    fileName: PropTypes.string,
+    dataSet: PropTypes.array
+};
+
+
 class DataSetSelector extends Component {
     render() {
         let i = this.props.selectedDataSet;
         return (
-            <Container><Row>
-                <Col>
+            <Container fluid={true}><Row>
+                <Col md={4}>
                     <Input type="select" name="select"
                            id="data-set-selector" onChange={this.props.dataSetChangeCallback}>
                         {this.props.dataSets.map(
@@ -158,7 +197,7 @@ class DataSetSelector extends Component {
                     <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
                                dataSet={this.props.dataSets[i]} />
                 </Col>
-                <Col>
+                <Col md={8}>
                     <DataGraph columns={this.props.dataSets[i]}/>
                 </Col>
             </Row></Container>
