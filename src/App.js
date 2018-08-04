@@ -16,9 +16,17 @@ class App extends Component {
         this.state = {
             fileJSON: null,
             fileSize: null,
+            selectedDataSet: 0
         };
 
         this.onFilesChange = this.onFilesChange.bind(this);
+        this.onDataSetSelect = this.onDataSetSelect.bind(this);
+    }
+
+    onDataSetSelect(e) {
+        this.setState({
+            selectedDataSet: e.target.value
+        })
     }
 
     onFilesChange(files) {
@@ -30,7 +38,8 @@ class App extends Component {
                 reader.result,
                 (err, result) => this.setState({
                     fileJSON: result["Document"],
-                    fileSize: file.size
+                    fileSize: file.size,
+                    selectedDataSet: 0
                 })
             );
         };
@@ -96,7 +105,9 @@ class App extends Component {
                         <Col>
                             {fileLoaded
                                 // TODO choose which data set to load
-                                ? <DataSetSelector dataSets={dataSets}
+                                ? <DataSetSelector selectedDataSet={this.state.selectedDataSet}
+                                                   dataSetChangeCallback={this.onDataSetSelect}
+                                                   dataSets={dataSets}
                                                    dataSetsHeaders={dataSetHeaders}/>
                                 : <div>No file loaded</div>}
                         </Col>
@@ -131,27 +142,13 @@ FileInfo.propTypes = {
 };
 
 class DataSetSelector extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedDataSet: 0
-        };
-        this.onDataSetSelect = this.onDataSetSelect.bind(this);
-    }
-
-    onDataSetSelect(e) {
-        this.setState({
-            selectedDataSet: e.target.value
-        })
-    }
-
     render() {
-        let i = this.state.selectedDataSet;
+        let i = this.props.selectedDataSet;
         return (
             <Container><Row>
                 <Col>
                     <Input type="select" name="select"
-                           id="data-set-selector" onChange={this.onDataSetSelect}>
+                           id="data-set-selector" onChange={this.props.dataSetChangeCallback}>
                         {this.props.dataSets.map(
                             (dataSet, ind) =>
                                 <option key={ind} value={ind}>Data Set {ind + 1}</option>
@@ -170,6 +167,8 @@ class DataSetSelector extends Component {
 }
 
 DataSetSelector.propTypes = {
+    selectedDataSet: PropTypes.number,
+    dataSetChangeCallback: PropTypes.func,
     dataSets: PropTypes.array,
     dataSetsHeaders: PropTypes.array
 };
