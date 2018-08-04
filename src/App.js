@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
 import FileDownload from "js-file-download";
-import fileSize from "filesize/lib/filesize.es6";
+import fileSize from "filesize";
 import Dygraph from 'dygraphs/index.es5';
 import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button} from 'reactstrap';
 import './App.css';
@@ -83,7 +83,6 @@ class App extends Component {
                     <NavbarBrand href="#" className={"mx-auto"}>Online LoggerPro</NavbarBrand>
                 </Navbar>
 
-
                 <Container>
                     <Row>
                         <Col className={"vertical-align"}>
@@ -110,8 +109,7 @@ class App extends Component {
                             {fileLoaded
                                 ? <Export dataSet={zip(dataSets[this.state.selectedDataSet])}
                                           fileName={
-                                              fileName.split(".")[0] + "_data_set"
-                                              + (this.state.selectedDataSet + 1) + ".csv"
+                                              `${fileName.split(".")[0]}_data_set_${this.state.selectedDataSet + 1}.csv`
                                           }/>
                                 : null}
                         </Col>
@@ -199,7 +197,8 @@ class DataSetSelector extends Component {
                                dataSet={this.props.dataSets[i]} />
                 </Col>
                 <Col md={8}>
-                    <DataGraph columns={this.props.dataSets[i]}/>
+                    <DataGraph axisLabels={this.props.dataSetsHeaders[i]}
+                               columns={this.props.dataSets[i]}/>
                 </Col>
             </Row></Container>
         );
@@ -260,28 +259,29 @@ class DataGraph extends Component {
     }
 
     generateOptions() {
-        let labels = this.props.columns.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
-        return {
+        let labels = this.props.axisLabels.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
+
+        let stdOptions = {
             labels: labels,
-            xlabel: "XAXIS",
-            ylabel: "YAXIS",
-            y2label: "Y2AXIS",
-            series: {
-                'Y2': {
-                    axis: 'y2'
-                }
-            },
-            axes: {
-                y: {
-                    axisLabelWidth: 60
-                },
-                y2: {
-                    labelsKMB: true
-                }
-            },
+            xlabel: this.props.axisLabels[0],
+            ylabel: this.props.axisLabels[1],
+            // Reset the zoom
             dateWindow: null,
             valueRange: null
         };
+
+        if (this.props.axisLabels.length > 2) {
+            return Object.assign(stdOptions, {
+                y2label: this.props.axisLabels[2],
+                series: {
+                    'Y2': {
+                        axis: 'y2'
+                    }
+                },
+            })
+        } else {
+            return stdOptions;
+        }
     }
 
     componentDidMount() {
@@ -304,7 +304,8 @@ class DataGraph extends Component {
 }
 
 DataGraph.propTypes = {
-    columns: PropTypes.array
+    columns: PropTypes.array,
+    axisLabels: PropTypes.array
 };
 
 export default App;

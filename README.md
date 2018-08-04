@@ -6,9 +6,10 @@ Todo:
 
   - [ ] Improve CSS
     - [x] Make it look potable
-    - [ ] Scrollable table
     - [x] Fix graph axis text
-  - [ ] Change table headers
+    - [ ] Scrollable table
+    - [ ] Fix axis labels overlapping on graph
+  - [x] Change table headers
   - [x] Add export system (csv, ... (?))
   - [ ] Fix data errors (NaN, etc)
   - [ ] Adapt graph to data (ex: spectrum)
