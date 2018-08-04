@@ -58,21 +58,33 @@ class App extends Component {
     render() {
         let fileLoaded = this.state.fileJSON !== null;
         let dataSetShapes;
-        let dataSetHeaders;
+        let dataSetsHeaders;
         let dataSets;
         let fileName;
         if (this.state.fileJSON !== null) {
-            dataSets = this.state.fileJSON["DataSet"].map(
-                (i) => i["DataColumn"].map(
-                    (j) => j["ColumnCells"][0].trim().split("\n").map(
-                        (k) => parseFloat(k)
-                    )
-                )
-            );
-            dataSetHeaders = this.state.fileJSON["DataSet"].map(
-                (i) => i["DataColumn"].map(
-                    (j) => `${j["DataObjectName"]} (${j["ColumnUnits"][0]})`
-                )
+            dataSetsHeaders = [];
+            dataSets = [];
+            // Loop the DataSets and remove empty columns
+            // Because for some reason some of the DataColumns don't have data inside ...
+            this.state.fileJSON["DataSet"].forEach(
+                (i) => {
+                    dataSets.push([]);
+                    dataSetsHeaders.push([]);
+                    i["DataColumn"].forEach(
+                        (j) => {
+                            if ("ColumnCells" in j) {
+                                dataSets[dataSets.length - 1].push(
+                                    j["ColumnCells"][0].trim().split("\n").map(
+                                        (k) => parseFloat(k)
+                                    )
+                                );
+                                dataSetsHeaders[dataSets.length - 1].push(
+                                    `${j["DataObjectName"]} (${j["ColumnUnits"][0]})`
+                                )
+                            }
+                        }
+                    );
+                }
             );
             dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
             fileName = this.state.fileJSON["FileName"][0];
@@ -120,7 +132,7 @@ class App extends Component {
                                 ? <DataSetSelector selectedDataSet={this.state.selectedDataSet}
                                                    dataSetChangeCallback={this.onDataSetSelect}
                                                    dataSets={dataSets}
-                                                   dataSetsHeaders={dataSetHeaders}/>
+                                                   dataSetsHeaders={dataSetsHeaders}/>
                                 : <div>No file loaded</div>}
                         </Col>
                     </Row>
