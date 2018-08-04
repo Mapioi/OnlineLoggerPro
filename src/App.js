@@ -262,6 +262,9 @@ class DataGraph extends Component {
         let labels = this.props.columns.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
         return {
             labels: labels,
+            xlabel: "XAXIS",
+            ylabel: "YAXIS",
+            y2label: "Y2AXIS",
             series: {
                 'Y2': {
                     axis: 'y2'
@@ -272,7 +275,6 @@ class DataGraph extends Component {
                     axisLabelWidth: 60
                 },
                 y2: {
-                    // set axis-related properties here
                     labelsKMB: true
                 }
             },

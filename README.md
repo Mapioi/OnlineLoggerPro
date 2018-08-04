@@ -7,7 +7,7 @@ Todo:
   - [ ] Improve CSS
     - [x] Make it look potable
     - [ ] Scrollable table
-    - [ ] Fix graph axis text
+    - [x] Fix graph axis text
   - [ ] Change table headers
   - [x] Add export system (csv, ... (?))
   - [ ] Fix data errors (NaN, etc)
