@@ -16,6 +16,6 @@ Todo:
 ### Libs
 
   - react
-  - reactstrap
-  - dygraph
-  - xml2js and js-file-download
+  - reactstrap for styling & layouts
+  - dygraph for the nice graph
+  - Utils: xml2js, js-file-download, filesize

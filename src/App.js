@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Files from 'react-files'
 import {parseString} from 'xml2js';
 import FileDownload from "js-file-download";
+import fileSize from "filesize/lib/filesize.es6";
 import Dygraph from 'dygraphs/index.es5';
 import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button} from 'reactstrap';
 import './App.css';
@@ -70,7 +71,7 @@ class App extends Component {
             );
             dataSetHeaders = this.state.fileJSON["DataSet"].map(
                 (i) => i["DataColumn"].map(
-                    (j) => j["ColumnUnits"][0]
+                    (j) => `${j["DataObjectName"]} (${j["ColumnUnits"][0]})`
                 )
             );
             dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
@@ -141,7 +142,7 @@ class FileInfo extends Component {
         return (
             <div id="file-info">
                 <div>File name: {this.props.fileName}</div>
-                <div>File size: {this.props.fileSize}</div>
+                <div>File size: {fileSize(this.props.fileSize)}</div>
                 <div>{numberDataSets} data set{numberDataSets > 1 ? "s" : ""}: {shapes}</div>
             </div>
         );
@@ -298,7 +299,7 @@ class DataGraph extends Component {
             ));
         }
 
-        return <div id="graph" ref="graph"></div>
+        return <div id="graph" ref="graph">Graph loading ...</div>
     }
 }
 
