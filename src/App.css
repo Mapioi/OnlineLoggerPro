@@ -14,6 +14,12 @@ nav {
     padding: 10px 0;
 }
 
+.info-text {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
 /* File */
 
 .files-dropzone {
@@ -62,4 +68,8 @@ nav {
     margin: 20px;
     height: 100%;
     width: 100%;
+}
+
+.buttons > * {
+    margin-right: 10px;
 }

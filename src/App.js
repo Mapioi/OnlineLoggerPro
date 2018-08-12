@@ -64,7 +64,7 @@ class App extends Component {
         if (this.state.fileJSON !== null) {
             dataSetsHeaders = [];
             dataSets = [];
-            // Loop the DataSets and remove empty columns
+            // Loop the DataSets to store data as 2d array and remove empty columns
             // Because for some reason some of the DataColumns don't have data inside ...
             this.state.fileJSON["DataSet"].forEach(
                 (i) => {
@@ -115,7 +115,7 @@ class App extends Component {
                                 ? <FileInfo fileName={fileName}
                                             fileSize={this.state.fileSize}
                                             dataSetShapes={dataSetShapes}/>
-                                : null}
+                                : <div className="info-text">No file loaded</div>}
                         </Col>
                         <Col className="vertical-align">
                             {fileLoaded
@@ -133,7 +133,7 @@ class App extends Component {
                                                    dataSetChangeCallback={this.onDataSetSelect}
                                                    dataSets={dataSets}
                                                    dataSetsHeaders={dataSetsHeaders}/>
-                                : <div>No file loaded</div>}
+                                : null}
                         </Col>
                     </Row>
                 </Container>
@@ -261,8 +261,12 @@ DataTable.propTypes = {
 class DataGraph extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+          pointGraph: false
+        };
         this.g = null;
         this.reset = this.reset.bind(this);
+        this.togglePointGraph = this.togglePointGraph.bind(this);
     }
 
     generateData() {
@@ -271,10 +275,18 @@ class DataGraph extends Component {
         ) //.map((i) => i.join(","));
     }
 
+    togglePointGraph() {
+        this.setState({
+            pointGraph: !this.state.pointGraph
+        })
+    }
+
     generateOptions() {
         let labels = this.props.axisLabels.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
+        let seriesOptions = {
 
-        let stdOptions = {
+        };
+        let topOptions = {
             labels: labels,
             xlabel: this.props.axisLabels[0],
             ylabel: this.props.axisLabels[1],
@@ -284,17 +296,26 @@ class DataGraph extends Component {
         };
 
         if (this.props.axisLabels.length > 2) {
-            return Object.assign(stdOptions, {
-                y2label: this.props.axisLabels[2],
-                series: {
-                    'Y2': {
-                        axis: 'y2'
-                    }
-                },
-            })
-        } else {
-            return stdOptions;
+            seriesOptions = {...seriesOptions, 'Y2': {
+                axis: 'y2',
+            }};
+            topOptions = {...topOptions, y2label: this.props.axisLabels[2]};
         }
+
+        if (this.state.pointGraph) {
+            topOptions = {...topOptions,
+                drawPoints: true,
+                pointSize: 2,
+                strokeWidth: 0.0
+            }
+        } else {
+            topOptions = {...topOptions,
+                drawPoints: false,
+                strokeWidth: 1
+            }
+        }
+
+        return {...topOptions, ...{series: seriesOptions}}
     }
 
     componentDidMount() {
@@ -316,14 +337,21 @@ class DataGraph extends Component {
 
         return <div id="graph-wrapper" className="text-center">
             <div id="graph" ref="graph">Graph loading ...</div>
-            <Button onClick={this.reset}>Reset graph zoom & pan</Button>
+            <div className="buttons">
+                <Button onClick={this.reset}>Reset graph zoom & pan</Button>
+                <Button onClick={this.togglePointGraph}>
+                    {this.state.pointGraph
+                        ? "Link data points"
+                        : "Unlink data points"}
+                </Button>
+            </div>
         </div>
     }
 }
 
 DataGraph.propTypes = {
     columns: PropTypes.array,
-    axisLabels: PropTypes.array
+    axisLabels: PropTypes.array,
 };
 
 export default App;
