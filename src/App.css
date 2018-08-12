@@ -11,7 +11,7 @@ nav {
 /* Layout */
 
 .col {
-    padding-top: 10px;
+    padding: 10px 0;
 }
 
 /* File */
@@ -54,8 +54,12 @@ nav {
 
 /* Graph */
 
+#graph-wrapper {
+    height: 70vh;
+}
+
 #graph {
     margin: 20px;
-    height: 70vh;
+    height: 100%;
     width: 100%;
 }

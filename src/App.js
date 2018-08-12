@@ -5,7 +5,7 @@ import {parseString} from 'xml2js';
 import FileDownload from "js-file-download";
 import fileSize from "filesize";
 import Dygraph from 'dygraphs/index.es5';
-import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button} from 'reactstrap';
+import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button, Card} from 'reactstrap';
 import './App.css';
 
 
@@ -262,6 +262,7 @@ class DataGraph extends Component {
     constructor(props) {
         super(props);
         this.g = null;
+        this.reset = this.reset.bind(this);
     }
 
     generateData() {
@@ -302,16 +303,21 @@ class DataGraph extends Component {
         );
     }
 
+    reset = () => this.g.updateOptions(Object.assign(
+        {'file': this.generateData()}, this.generateOptions()
+    ));
+
     render() {
         if (this.g !== null) {
             // If the digraph object has been created, we refresh the current graph
             // Else a new graph is created in componentDidMount
-            this.g.updateOptions(Object.assign(
-                {'file': this.generateData()}, this.generateOptions()
-            ));
+            this.reset()
         }
 
-        return <div id="graph" ref="graph">Graph loading ...</div>
+        return <div id="graph-wrapper" className="text-center">
+            <div id="graph" ref="graph">Graph loading ...</div>
+            <Button onClick={this.reset}>Reset graph zoom & pan</Button>
+        </div>
     }
 }
 
