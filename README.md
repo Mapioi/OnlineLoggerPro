@@ -11,7 +11,7 @@ Todo:
     - [ ] Fix axis labels overlapping on graph
   - [x] Change table headers
   - [x] Add export system (csv, ... (?))
-  - [ ] Fix data errors (NaN, etc)
+  - [ ] Fix data-related problems (NaN, floating points)
   - [ ] Adapt graph to data (ex: spectrum)
   
 ### Libs
