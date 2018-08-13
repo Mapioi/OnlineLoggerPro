@@ -5,7 +5,20 @@ import {parseString} from 'xml2js';
 import FileDownload from "js-file-download";
 import fileSize from "filesize";
 import Dygraph from 'dygraphs/index.es5';
-import {Container, Row, Col, Input, Table, Navbar, NavbarBrand, Badge, Button, Card} from 'reactstrap';
+import {
+    Container,
+    Row,
+    Col,
+    Input,
+    Table,
+    Navbar,
+    NavbarBrand,
+    Badge,
+    Button,
+    Modal,
+    ModalHeader,
+    ModalBody, ModalFooter
+} from 'reactstrap';
 import './App.css';
 
 
@@ -29,7 +42,7 @@ class App extends Component {
 
     onDataSetSelect(e) {
         this.setState({
-            selectedDataSet: parseInt(e.target.value)
+            selectedDataSet: parseInt(e.target.value, 10)
         })
     }
 
@@ -58,12 +71,10 @@ class App extends Component {
     render() {
         let fileLoaded = this.state.fileJSON !== null;
         let dataSetShapes;
-        let dataSetsHeaders;
-        let dataSets;
+        let dataSetsHeaders = [];
+        let dataSets = [];
         let fileName;
         if (this.state.fileJSON !== null) {
-            dataSetsHeaders = [];
-            dataSets = [];
             // Loop the DataSets to store data as 2d array and remove empty columns
             // Because for some reason some of the DataColumns don't have data inside ...
             this.state.fileJSON["DataSet"].forEach(
@@ -262,11 +273,13 @@ class DataGraph extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          pointGraph: false
+            pointGraph: false,
+            modal: false
         };
         this.g = null;
         this.reset = this.reset.bind(this);
         this.togglePointGraph = this.togglePointGraph.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
     }
 
     generateData() {
@@ -279,6 +292,12 @@ class DataGraph extends Component {
         this.setState({
             pointGraph: !this.state.pointGraph
         })
+    }
+
+    toggleModal() {
+        this.setState({
+            modal: !this.state.modal
+        });
     }
 
     generateOptions() {
@@ -338,12 +357,26 @@ class DataGraph extends Component {
         return <div id="graph-wrapper" className="text-center">
             <div id="graph" ref="graph">Graph loading ...</div>
             <div className="buttons">
-                <Button onClick={this.reset}>Reset graph zoom & pan</Button>
                 <Button onClick={this.togglePointGraph}>
                     {this.state.pointGraph
                         ? "Link data points"
                         : "Unlink data points"}
                 </Button>
+                <Button outline onClick={this.toggleModal}>Graph controls</Button>
+                {/* Graph controls modals */}
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+                    <ModalHeader toggle={this.toggleModal}>Graph controls</ModalHeader>
+                    <ModalBody>
+                        <ul>
+                            <li>Drag to zoom</li>
+                            <li>Shift + drag to pan</li>
+                            <li>Double click to reset zoom and pan</li>
+                        </ul>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.toggleModal}>OK</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         </div>
     }
