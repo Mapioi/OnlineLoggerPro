@@ -113,7 +113,7 @@ class App extends Component {
                                    onChange={this.onFilesChange}
                                    onError={App.onFilesError}
                                    // TODO find out the other file formats
-                                   accepts={['.cmbl']}
+                                   accepts={['.cmbl', '.qmbl']}
                                    multiple={false}
                                    maxFileSize={10000000}
                                    minFileSize={0}
