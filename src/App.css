@@ -1,75 +1,75 @@
 /* Header */
 
 .navbar-brand {
-    font-size: 2em;
+  font-size: 2em;
 }
 
 nav {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 /* Layout */
 
 .col {
-    padding: 10px 0;
+  padding: 10px 0;
 }
 
 .info-text {
-    height: 100%;
-    display: flex;
-    align-items: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 /* File */
 
 .files-dropzone {
-    border: 3px dashed lightgray;
-    border-radius: 3px;
-    padding: 20px;
+  border: 3px dashed lightgray;
+  border-radius: 3px;
+  padding: 20px;
 }
 
 .files-dropzone-active {
-    background-color: lightgreen;
+  background-color: lightgreen;
 }
 
 /* File info */
 .data-set-shape {
-    margin: 2px;
+  margin: 2px;
 }
 
 /* Data select */
 #data-set-selector {
-    margin: 10px 0;
+  margin: 10px 0;
 }
 
 .vertical-align {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Data Display */
 
 .data-display {
-    width: 100%;
+  width: 100%;
 }
 
 .data-display > * {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* Graph */
 
 #graph-wrapper {
-    height: 70vh;
+  height: 70vh;
 }
 
 #graph {
-    margin: 20px;
-    height: 100%;
-    width: 100%;
+  margin: 20px;
+  height: 100%;
+  width: 100%;
 }
 
 .buttons > * {
-    margin-right: 10px;
+  margin-right: 10px;
 }
