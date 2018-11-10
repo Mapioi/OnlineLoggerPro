@@ -188,6 +188,7 @@ class Export extends Component {
     this.state = {
       modal: false,
       unitsChecked: false,
+      fileName: this.props.fileName
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.exportDataSet = this.exportDataSet.bind(this);
@@ -201,7 +202,7 @@ class Export extends Component {
       ),
       ...this.props.dataSet
     ];
-    FileDownload(arrayToCSV(csv), this.props.fileName)
+    FileDownload(arrayToCSV(csv), this.state.fileName)
   }
 
   toggleModal() {
@@ -216,10 +217,16 @@ class Export extends Component {
         <Button onClick={this.toggleModal}>
           Export selected data set as CSV
         </Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+        <Modal isOpen={this.state.modal} toggle={this.toggleModal}
+               className={this.props.className}>
           <ModalHeader toggle={this.toggleModal}>Export to CSV</ModalHeader>
           <ModalBody>
             <Form>
+              <FormGroup>
+                <Label>Filename</Label>
+                <Input type="text" value={this.state.fileName}
+                       onChange={(e) => this.setState({fileName: e.target.value})}/>
+              </FormGroup>
               <FormGroup check>
                 <Label check>
                   <Input type="checkbox"
