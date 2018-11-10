@@ -17,7 +17,11 @@ import {
   Button,
   Modal,
   ModalHeader,
-  ModalBody, ModalFooter
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Label
 } from 'reactstrap';
 import './App.css';
 
@@ -90,7 +94,7 @@ class App extends Component {
                   )
                 );
                 dataSetsHeaders[dataSets.length - 1].push(
-                  `${j["DataObjectName"]} (${j["ColumnUnits"][0]})`
+                    [j["DataObjectName"][0], j["ColumnUnits"][0]]
                 )
               }
             }
@@ -131,6 +135,7 @@ class App extends Component {
             <Col className="vertical-align">
               {fileLoaded
                 ? <Export dataSet={zip(dataSets[this.state.selectedDataSet])}
+                          dataSetHeaders={dataSetsHeaders[this.state.selectedDataSet]}
                           fileName={
                             `${fileName.split(".")[0]}_data_set_${this.state.selectedDataSet + 1}.csv`
                           }/>
@@ -180,24 +185,65 @@ FileInfo.propTypes = {
 class Export extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      modal: false,
+      unitsChecked: false,
+    };
+    this.toggleModal = this.toggleModal.bind(this);
     this.exportDataSet = this.exportDataSet.bind(this);
   }
 
   exportDataSet() {
-    FileDownload(arrayToCSV(this.props.dataSet), this.props.fileName)
+    this.toggleModal();
+    let csv = [
+      this.props.dataSetHeaders.map(
+          (i) => this.state.unitsChecked ? `${i[0]} (${i[1]})` : i[0]
+      ),
+      ...this.props.dataSet
+    ];
+    FileDownload(arrayToCSV(csv), this.props.fileName)
+  }
+
+  toggleModal() {
+    this.setState({
+      modal: !this.state.modal
+    });
   }
 
   render() {
     return (
-      <Button onClick={this.exportDataSet}>
-        Export selected data set as CSV
-      </Button>
+      <div>
+        <Button onClick={this.toggleModal}>
+          Export selected data set as CSV
+        </Button>
+        <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+          <ModalHeader toggle={this.toggleModal}>Export to CSV</ModalHeader>
+          <ModalBody>
+            <Form>
+              <FormGroup check>
+                <Label check>
+                  <Input type="checkbox"
+                         checked={this.state.unitsChecked}
+                         onChange={(e) =>
+                      this.setState({unitsChecked: e.target.checked})}/>{' '}
+                  Column headers include units
+                </Label>
+              </FormGroup>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+          <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+          <Button color="primary" onClick={this.exportDataSet}>Download</Button>
+          </ModalFooter>
+        </Modal>
+      </div>
     );
   }
 }
 
 Export.propTypes = {
   fileName: PropTypes.string,
+  dataSetHeaders: PropTypes.array,
   dataSet: PropTypes.array
 };
 
@@ -244,7 +290,7 @@ class DataTable extends Component {
         <thead>
         <tr>
           {this.props.dataSetHeaders.map(
-            (header, i) => <th key={i}>{header}</th>
+            (header, i) => <th key={i}>{`${header[0]} (${header[1]})`}</th>
           )}
         </tr>
         </thead>
@@ -276,6 +322,7 @@ class DataGraph extends Component {
       pointGraph: false,
       modal: false
     };
+    this.axisLabels = this.props.axisLabels.map((i) => `${i[0]} (${i[1]})`);
     this.g = null;
     this.reset = this.reset.bind(this);
     this.togglePointGraph = this.togglePointGraph.bind(this);
@@ -305,8 +352,8 @@ class DataGraph extends Component {
     let seriesOptions = {};
     let topOptions = {
       labels: labels,
-      xlabel: this.props.axisLabels[0],
-      ylabel: this.props.axisLabels[1],
+      xlabel: this.axisLabels[0],
+      ylabel: this.axisLabels[1],
       // Reset the zoom
       dateWindow: null,
       valueRange: null
