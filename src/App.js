@@ -25,11 +25,15 @@ import {
 } from 'reactstrap';
 import './App.css';
 
-
+// Utils
 let zip = (iter) => iter[0].map((_, c) => iter.map(i => i[c]));
 let arrayToCSV = (arr) => arr.map(
   (line) => line.join(",")
 ).join("\n");
+let unitFormat = (arr) => {
+  return arr[1] === "" ? arr[0] : `${arr[0]} (${arr[1]})`
+};
+
 
 class App extends Component {
   constructor(props) {
@@ -83,22 +87,25 @@ class App extends Component {
       // Because for some reason some of the DataColumns don't have data inside ...
       this.state.fileJSON["DataSet"].forEach(
         (i) => {
-          dataSets.push([]);
-          dataSetsHeaders.push([]);
-          i["DataColumn"].forEach(
-            (j) => {
-              if ("ColumnCells" in j) {
-                dataSets[dataSets.length - 1].push(
-                  j["ColumnCells"][0].trim().split("\n").map(
-                    (k) => parseFloat(k)
-                  )
-                );
-                dataSetsHeaders[dataSets.length - 1].push(
-                    [j["DataObjectName"][0], j["ColumnUnits"][0]]
-                )
-              }
-            }
-          );
+          if ("DataColumn" in i) {
+            // TODO figure out why some data sets don't have data (!?)
+            dataSets.push([]);
+            dataSetsHeaders.push([]);
+            i["DataColumn"].forEach(
+                (j) => {
+                  if ("ColumnCells" in j) {
+                    dataSets[dataSets.length - 1].push(
+                        j["ColumnCells"][0].trim().split("\n").map(
+                            (k) => parseFloat(k)
+                        )
+                    );
+                    dataSetsHeaders[dataSets.length - 1].push(
+                        [j["DataObjectName"][0], j["ColumnUnits"][0]]
+                    )
+                  }
+                }
+            );
+          }
         }
       );
       dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
@@ -198,7 +205,7 @@ class Export extends Component {
     this.toggleModal();
     let csv = [
       this.props.dataSetHeaders.map(
-          (i) => this.state.unitsChecked ? `${i[0]} (${i[1]})` : i[0]
+          (i) => this.state.unitsChecked ? unitFormat(i) : i[0]
       ),
       ...this.props.dataSet
     ];
@@ -297,7 +304,7 @@ class DataTable extends Component {
         <thead>
         <tr>
           {this.props.dataSetHeaders.map(
-            (header, i) => <th key={i}>{`${header[0]} (${header[1]})`}</th>
+            (header, i) => <th key={i}>{unitFormat(header)}</th>
           )}
         </tr>
         </thead>
@@ -329,7 +336,7 @@ class DataGraph extends Component {
       pointGraph: false,
       modal: false
     };
-    this.axisLabels = this.props.axisLabels.map((i) => `${i[0]} (${i[1]})`);
+    this.axisLabels = this.props.axisLabels.map(unitFormat);
     this.g = null;
     this.reset = this.reset.bind(this);
     this.togglePointGraph = this.togglePointGraph.bind(this);
