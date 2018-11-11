@@ -15,6 +15,7 @@ Todo:
   - [ ] Allow loading data from two files and display it on one graph
   - [ ] Fix data-related problems (NaN, floating points)
   - [ ] Adapt graph to data (ex: spectrum)
+  - [ ] Make a nice readme
   
 ### Libs
 
