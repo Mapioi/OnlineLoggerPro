@@ -8,6 +8,23 @@ nav {
   margin-bottom: 10px;
 }
 
+/* Error */
+
+#error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#error div {
+  max-width: 50%;
+}
+
+#error h2 {
+  color: darkred;
+  text-align: center;
+}
+
 /* Layout */
 
 .col {
