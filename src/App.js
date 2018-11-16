@@ -28,7 +28,7 @@ import './App.css';
 // Utils
 let zip = (iter) => iter[0].map((_, c) => iter.map(i => i[c]));
 let arrayToCSV = (arr) => arr.map(
-  (line) => line.join(",")
+    (line) => line.join(",")
 ).join("\n");
 let unitFormat = (arr) => {
   return arr[1] === "" ? arr[0] : `${arr[0]} (${arr[1]})`
@@ -60,12 +60,12 @@ class App extends Component {
     let reader = new FileReader();
     reader.onloadend = () => {
       parseString(
-        reader.result,
-        (err, result) => this.setState({
-          fileJSON: result["Document"],
-          fileSize: file.size,
-          selectedDataSet: 0
-        })
+          reader.result,
+          (err, result) => this.setState({
+            fileJSON: result["Document"],
+            fileSize: file.size,
+            selectedDataSet: 0
+          })
       );
     };
     reader.readAsText(file);
@@ -86,81 +86,82 @@ class App extends Component {
       // Loop the DataSets to store data as 2d array and remove empty columns
       // Because for some reason some of the DataColumns don't have data inside ...
       this.state.fileJSON["DataSet"].forEach(
-        (i) => {
-          if ("DataColumn" in i) {
-            // TODO figure out why some data sets don't have data (!?)
-            dataSets.push([]);
-            dataSetsHeaders.push([]);
-            i["DataColumn"].forEach(
-                (j) => {
-                  if ("ColumnCells" in j) {
-                    dataSets[dataSets.length - 1].push(
-                        j["ColumnCells"][0].trim().split("\n").map(
-                            (k) => parseFloat(k)
-                        )
-                    );
-                    dataSetsHeaders[dataSets.length - 1].push(
-                        [j["DataObjectName"][0], j["ColumnUnits"][0]]
-                    )
+          (i) => {
+            if ("DataColumn" in i) {
+              // TODO figure out why some data sets don't have data (!?)
+              dataSets.push([]);
+              dataSetsHeaders.push([]);
+              i["DataColumn"].forEach(
+                  (j) => {
+                    if ("ColumnCells" in j) {
+                      dataSets[dataSets.length - 1].push(
+                          j["ColumnCells"][0].trim().split("\n").map(
+                              (k) => parseFloat(k)
+                          )
+                      );
+                      dataSetsHeaders[dataSets.length - 1].push(
+                          [j["DataObjectName"][0], j["ColumnUnits"][0]]
+                      )
+                    }
                   }
-                }
-            );
+              );
+            }
           }
-        }
       );
       dataSetShapes = dataSets.map((i) => [i.length, i[0].length]);
       fileName = this.state.fileJSON["FileName"][0];
     }
     return (
-      <div className="App">
-        <Navbar color="dark" dark expand="md">
-          <NavbarBrand href="#" className={"mx-auto"}>Online LoggerPro</NavbarBrand>
-        </Navbar>
+        <div className="App">
+          <Navbar color="dark" dark expand="md">
+            <NavbarBrand href="#" className={"mx-auto"}>Online LoggerPro</NavbarBrand>
+          </Navbar>
 
-        <Container>
-          <Row>
-            <Col className={"vertical-align"}>
-              <Files className='files-dropzone'
-                     onChange={this.onFilesChange}
-                     onError={App.onFilesError}
-                // TODO find out the other file formats
-                     accepts={['.cmbl', '.qmbl']}
-                     multiple={false}
-                     maxFileSize={10000000}
-                     minFileSize={0}
-                     clickable={true}>
-                Drop files here or click to upload
-              </Files>
-            </Col>
-            <Col>
-              {fileLoaded
-                ? <FileInfo fileName={fileName}
-                            fileSize={this.state.fileSize}
-                            dataSetShapes={dataSetShapes}/>
-                : <div className="info-text">No file loaded</div>}
-            </Col>
-            <Col className="vertical-align">
-              {fileLoaded
-                ? <Export dataSet={zip(dataSets[this.state.selectedDataSet])}
-                          dataSetHeaders={dataSetsHeaders[this.state.selectedDataSet]}
-                          fileName={
-                            `${fileName.split(".")[0]}_data_set_${this.state.selectedDataSet + 1}.csv`
-                          }/>
-                : null}
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              {fileLoaded
-                ? <DataSetSelector selectedDataSet={this.state.selectedDataSet}
-                                   dataSetChangeCallback={this.onDataSetSelect}
-                                   dataSets={dataSets}
-                                   dataSetsHeaders={dataSetsHeaders}/>
-                : null}
-            </Col>
-          </Row>
-        </Container>
-      </div>
+          <Container>
+            <Row>
+              <Col className={"vertical-align"}>
+                <Files className='files-dropzone'
+                       onChange={this.onFilesChange}
+                       onError={App.onFilesError}
+                    // TODO find out the other file formats
+                       accepts={['.cmbl', '.qmbl']}
+                       multiple={false}
+                       maxFileSize={10000000}
+                       minFileSize={0}
+                       clickable={true}>
+                  Drop files here or click to upload
+                </Files>
+              </Col>
+`              <Col>
+                {fileLoaded
+                    ? <FileInfo fileName={fileName}
+                                fileSize={this.state.fileSize}
+                                dataSetShapes={dataSetShapes}/>
+                    : <div className="info-text">No file loaded</div>}
+              </Col>
+              <Col className="vertical-align">
+                {fileLoaded
+                    ? <Export dataSet={zip(dataSets[this.state.selectedDataSet])}
+                              dataSetHeaders={dataSetsHeaders[this.state.selectedDataSet]}
+                              fileName={
+                                `${fileName.split(".")[0]}_data_set_${this.state.selectedDataSet + 1}.csv`
+                              }
+                              key={fileName}/>
+                    : null}
+              </Col>`
+            </Row>
+            <Row>
+              <Col>
+                {fileLoaded
+                    ? <DataSetSelector selectedDataSet={this.state.selectedDataSet}
+                                       dataSetChangeCallback={this.onDataSetSelect}
+                                       dataSets={dataSets}
+                                       dataSetsHeaders={dataSetsHeaders}/>
+                    : null}
+              </Col>
+            </Row>
+          </Container>
+        </div>
     );
   }
 }
@@ -169,15 +170,15 @@ class App extends Component {
 class FileInfo extends Component {
   render() {
     let shapes = this.props.dataSetShapes.map(
-      (i, index) => <Badge color="secondary" key={index} className="data-set-shape">{i[0]} x {i[1]}</Badge>
+        (i, index) => <Badge color="secondary" key={index} className="data-set-shape">{i[0]} x {i[1]}</Badge>
     );
     let numberDataSets = this.props.dataSetShapes.length;
     return (
-      <div id="file-info">
-        <div>File name: {this.props.fileName}</div>
-        <div>File size: {fileSize(this.props.fileSize)}</div>
-        <div>{numberDataSets} data set{numberDataSets > 1 ? "s" : ""}: {shapes}</div>
-      </div>
+        <div id="file-info">
+          <div>File name: {this.props.fileName}</div>
+          <div>File size: {fileSize(this.props.fileSize)}</div>
+          <div>{numberDataSets} data set{numberDataSets > 1 ? "s" : ""}: {shapes}</div>
+        </div>
     );
   }
 }
@@ -220,37 +221,37 @@ class Export extends Component {
 
   render() {
     return (
-      <div>
-        <Button onClick={this.toggleModal}>
-          Export selected data set as CSV
-        </Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggleModal}
-               className={this.props.className}>
-          <ModalHeader toggle={this.toggleModal}>Export to CSV</ModalHeader>
-          <ModalBody>
-            <Form>
-              <FormGroup>
-                <Label>Filename</Label>
-                <Input type="text" value={this.state.fileName}
-                       onChange={(e) => this.setState({fileName: e.target.value})}/>
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                  <Input type="checkbox"
-                         checked={this.state.unitsChecked}
-                         onChange={(e) =>
-                      this.setState({unitsChecked: e.target.checked})}/>{' '}
-                  Column headers include units
-                </Label>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-          <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
-          <Button color="primary" onClick={this.exportDataSet}>Download</Button>
-          </ModalFooter>
-        </Modal>
-      </div>
+        <div>
+          <Button onClick={this.toggleModal}>
+            Export selected data set as CSV
+          </Button>
+          <Modal isOpen={this.state.modal} toggle={this.toggleModal}
+                 className={this.props.className}>
+            <ModalHeader toggle={this.toggleModal}>Export to CSV</ModalHeader>
+            <ModalBody>
+              <Form>
+                <FormGroup>
+                  <Label>Filename</Label>
+                  <Input type="text" value={this.state.fileName}
+                         onChange={(e) => this.setState({fileName: e.target.value})}/>
+                </FormGroup>
+                <FormGroup check>
+                  <Label check>
+                    <Input type="checkbox"
+                           checked={this.state.unitsChecked}
+                           onChange={(e) =>
+                               this.setState({unitsChecked: e.target.checked})}/>{' '}
+                    Column headers include units
+                  </Label>
+                </FormGroup>
+              </Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+              <Button color="primary" onClick={this.exportDataSet}>Download</Button>
+            </ModalFooter>
+          </Modal>
+        </div>
     );
   }
 }
@@ -266,24 +267,24 @@ class DataSetSelector extends Component {
   render() {
     let i = this.props.selectedDataSet;
     return (
-      <Container fluid={true}><Row>
-        <Col md={4}>
-          <Input type="select" name="select"
-                 id="data-set-selector" onChange={this.props.dataSetChangeCallback}>
-            {this.props.dataSets.map(
-              (dataSet, ind) =>
-                <option key={ind} value={ind}>Data Set {ind + 1}</option>
-            )}
-          </Input>
+        <Container fluid={true}><Row>
+          <Col md={4}>
+            <Input type="select" name="select"
+                   id="data-set-selector" onChange={this.props.dataSetChangeCallback}>
+              {this.props.dataSets.map(
+                  (dataSet, ind) =>
+                      <option key={ind} value={ind}>Data Set {ind + 1}</option>
+              )}
+            </Input>
 
-          <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
-                     dataSet={this.props.dataSets[i]}/>
-        </Col>
-        <Col md={8}>
-          <DataGraph axisLabels={this.props.dataSetsHeaders[i]}
-                     columns={this.props.dataSets[i]}/>
-        </Col>
-      </Row></Container>
+            <DataTable dataSetHeaders={this.props.dataSetsHeaders[i]}
+                       dataSet={this.props.dataSets[i]}/>
+          </Col>
+          <Col md={8}>
+            <DataGraph axisLabels={this.props.dataSetsHeaders[i]}
+                       columns={this.props.dataSets[i]}/>
+          </Col>
+        </Row></Container>
     );
   }
 }
@@ -304,18 +305,18 @@ class DataTable extends Component {
         <thead>
         <tr>
           {this.props.dataSetHeaders.map(
-            (header, i) => <th key={i}>{unitFormat(header)}</th>
+              (header, i) => <th key={i}>{unitFormat(header)}</th>
           )}
         </tr>
         </thead>
         <tbody>
         {rows.map(
-          (row, i) => <tr key={i}>{
-            row.map(
-              (number, j) =>
-                <td key={i.toString() + j.toString()}>{number.toFixed(2)}</td>
-            )
-          }</tr>
+            (row, i) => <tr key={i}>{
+              row.map(
+                  (number, j) =>
+                      <td key={i.toString() + j.toString()}>{number.toFixed(2)}</td>
+              )
+            }</tr>
         )}
         </tbody>
       </Table>
@@ -345,7 +346,7 @@ class DataGraph extends Component {
 
   generateData() {
     return zip(
-      this.props.columns
+        this.props.columns
     ) //.map((i) => i.join(","));
   }
 
@@ -402,12 +403,12 @@ class DataGraph extends Component {
 
   componentDidMount() {
     this.g = new Dygraph(
-      this.refs.graph, this.generateData().join("\n"), this.generateOptions()
+        this.refs.graph, this.generateData().join("\n"), this.generateOptions()
     );
   }
 
   reset = () => this.g.updateOptions(Object.assign(
-    {'file': this.generateData()}, this.generateOptions()
+      {'file': this.generateData()}, this.generateOptions()
   ));
 
   render() {
@@ -422,8 +423,8 @@ class DataGraph extends Component {
       <div className="buttons">
         <Button onClick={this.togglePointGraph}>
           {this.state.pointGraph
-            ? "Link data points"
-            : "Unlink data points"}
+              ? "Link data points"
+              : "Unlink data points"}
         </Button>
         <Button outline onClick={this.toggleModal}>Graph controls</Button>
         {/* Graph controls modals */}
