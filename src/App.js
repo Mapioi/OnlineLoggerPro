@@ -282,7 +282,8 @@ class DataSetSelector extends Component {
           </Col>
           <Col md={8}>
             <DataGraph axisLabels={this.props.dataSetsHeaders[i]}
-                       columns={this.props.dataSets[i]}/>
+                       columns={this.props.dataSets[i]}
+                       key={this.props.dataSets}/>
           </Col>
         </Row></Container>
     );
