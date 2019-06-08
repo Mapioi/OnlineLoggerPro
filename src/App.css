@@ -75,6 +75,13 @@ nav {
   display: inline-block;
 }
 
+/* Data Table */
+
+.data-table-wrapper {
+  height: 500px;
+  overflow: auto;
+}
+
 /* Graph */
 
 #graph-wrapper {

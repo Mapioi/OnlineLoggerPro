@@ -299,8 +299,9 @@ DataSetSelector.propTypes = {
 class DataTable extends Component {
   render() {
     let rows = zip(this.props.dataSet);
+    // console.log(rows);
     return <div className="data-table-wrapper">
-      <Table className="data-table" bordered={true} hover={true}>
+      <Table className="data-table" responsive bordered={true} hover={true}>
         <thead>
         <tr>
           {this.props.dataSetHeaders.map(
@@ -336,7 +337,6 @@ class DataGraph extends Component {
       pointGraph: false,
       modal: false
     };
-    this.axisLabels = this.props.axisLabels.map(unitFormat);
     this.g = null;
     this.reset = this.reset.bind(this);
     this.togglePointGraph = this.togglePointGraph.bind(this);
@@ -349,37 +349,26 @@ class DataGraph extends Component {
     ) //.map((i) => i.join(","));
   }
 
-  togglePointGraph() {
-    this.setState({
-      pointGraph: !this.state.pointGraph
-    })
-  }
-
-  toggleModal() {
-    this.setState({
-      modal: !this.state.modal
-    });
-  }
-
   generateOptions() {
     let labels = this.props.axisLabels.map((_, ind) => ind === 0 ? "X" : "Y" + ind);
     let seriesOptions = {};
+    let axisLabels = this.props.axisLabels.map(unitFormat);
     let topOptions = {
       labels: labels,
-      xlabel: this.axisLabels[0],
-      ylabel: this.axisLabels[1],
+      xlabel: axisLabels[0],
+      ylabel: axisLabels[1],
       // Reset the zoom
       dateWindow: null,
       valueRange: null
     };
 
-    if (this.props.axisLabels.length > 2) {
+    if (axisLabels.length > 2) {
       seriesOptions = {
         ...seriesOptions, 'Y2': {
           axis: 'y2',
         }
       };
-      topOptions = {...topOptions, y2label: this.props.axisLabels[2]};
+      topOptions = {...topOptions, y2label: axisLabels[2]};
     }
 
     if (this.state.pointGraph) {
@@ -401,14 +390,28 @@ class DataGraph extends Component {
   }
 
   componentDidMount() {
-    this.g = new Dygraph(
-      this.refs.graph, this.generateData().join("\n"), this.generateOptions()
-    );
+    if (this.g === null) {
+      this.g = new Dygraph(
+          this.refs.graph, this.generateData().join("\n"), this.generateOptions()
+      );
+    }
   }
 
-  reset = () => this.g.updateOptions(Object.assign(
-    {'file': this.generateData()}, this.generateOptions()
-  ));
+  reset = () => this.g.updateOptions(
+      {...{'file': this.generateData()}, ...this.generateOptions()}
+  );
+
+  togglePointGraph() {
+    this.setState({
+      pointGraph: !this.state.pointGraph
+    })
+  }
+
+  toggleModal() {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
 
   render() {
     if (this.g !== null) {

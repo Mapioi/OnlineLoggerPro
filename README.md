@@ -7,10 +7,13 @@ Todo:
   - [ ] Improve CSS
     - [x] Make it look potable
     - [x] Fix graph axis text
-    - [ ] Scrollable table
+    - [X] Scrollable table
+      - [ ] Keep fixed headers
     - [ ] Fix axis labels overlapping on graph
   - [x] Change table headers
-  - [x] Add export system (csv, ... (?))
+  - [x] Add export system (csv)
+  - [ ] Handle all the oddities of the cmbl format
+  - [ ] Common scale for common units
   - [ ] Allow disabling certain data columns on the graph
   - [ ] Allow loading data from two files and display it on one graph
   - [ ] Fix data-related problems (NaN, floating points)
